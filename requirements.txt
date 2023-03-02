@@ -7,5 +7,5 @@ halo
 Pillow
 imageio
 sqlalchemy
-psycopg2
-dotenv
+psycopg2-binary
+python-dotenv
