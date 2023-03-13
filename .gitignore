@@ -104,3 +104,7 @@ dist
 .tern-port
 
 .venv*
+
+.ipynb_checkpoints
+__pycache__
+
