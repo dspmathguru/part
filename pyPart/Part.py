@@ -16,7 +16,7 @@ class Footprint(Base):
   description: Mapped[str | None] = mapped_column(String(200))
 
   def __repr__(self) -> str:
-    return f"Footprint(id={self.id!r}, name={self.name!r})"
+    return f"<Footprint(id={self.id!r}, name={self.name!r})>"
   
 class CompanyType(Base):
   __tablename__ = 'company_type'
@@ -25,7 +25,7 @@ class CompanyType(Base):
   name: Mapped[str] = mapped_column(String(50))
 
   def __repr__(self) -> str:
-    return f"CompanyType(id={self.id!r}, name={self.name!r})"
+    return f"<CompanyType(id={self.id!r}, name={self.name!r})>"
 
 class Company(Base):
   __tablename__ = 'company'
@@ -44,17 +44,19 @@ class Company(Base):
   contact: Mapped[str | None] = mapped_column(String(50))
 
   def __repr__(self) -> str:
-    return f"Company(id={self.id!r}, name={self.name!r})"
+    return f"<Company(id={self.id!r}, name={self.name!r})>"
   
 class PartType(Base):
   __tablename__ = 'part_type'
 
   id: Mapped[int] = mapped_column(primary_key=True)
   type: Mapped[str] = mapped_column(String(50))
+  prefix: Mapped[str] = mapped_column(String(10))
+  version: Mapped[str | None] = mapped_column(String(10))
   description: Mapped[str | None] = mapped_column(String(200))
 
   def __repr__(self) -> str:
-    return f"PartType(id={self.id!r}, type={self.type!r}, description={self.description!r}"
+    return f"<PartType(id={self.id!r}, type={self.type!r}, description={self.description!r}>"
 
 class ManufacturerPart(Base):
   __tablename__ = "manufacturer_part"
@@ -76,7 +78,7 @@ class ManufacturerPart(Base):
   )
 
   def __repr__(self) -> str:
-    return f"ManufacturerPart(id={self.id!r}, manufacturer={self.manufacturer!r}, pn={self.pn!r}"
+    return f"<ManufacturerPart(id={self.id!r}, manufacturer={self.manufacturer!r}, pn={self.pn!r}>"
   
 class DistributorPart(Base):
   __tablename__ = "distributor_part"
@@ -89,7 +91,7 @@ class DistributorPart(Base):
   manufacturer_part: Mapped[ManufacturerPart] = relationship(back_populates="distributors")
 
   def __repr__(self) -> str:
-    return f"DistributorPart(id={self.id!r}, manufacturer={self.manufacturer!r}, pn={self.pn!r}"
+    return f"<DistributorPart(id={self.id!r}, manufacturer={self.manufacturer!r}, pn={self.pn!r}>"
 
 class Part(Base):
   __tablename__ = 'part'
@@ -106,5 +108,27 @@ class Part(Base):
   descripiton: Mapped[str | None] = mapped_column(String(2000))
 
   def __repr__(self) -> str:
-    return f"Part(id={self.id!r}, cspnold={self.cspnold!r}, cspn={self.cspn!r}, footprint={self.footprint!r}, description={self.description!r}"  
+    return f"<Part(id={self.id!r}, cspnold={self.cspnold!r}, cspn={self.cspn!r}, footprint={self.footprint!r}, description={self.description!r}>"  
+  
+class BOM(Base):
+  __tablename__ = 'bom'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  name: Mapped[str] = mapped_column(String(50))
+  items: Mapped[List['BOMItem']] = relationship(
+    back_populates='item', cascade='all, delete-orphan'
+  )
+
+  def __repr__(self) -> str:
+    return f'<BOM name={self.name}>'
+
+class BOMItem(Base):
+  __tablename__ = 'bom_items'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  item_id: Mapped[int] = mapped_column(ForeignKey("bom.id"))
+  item: Mapped[BOM] = relationship(back_populates='items')
+
+  def __repr__(self) -> str:
+    return f'<BOMItem id={self.id}, item_id={self.item_id}>'
   

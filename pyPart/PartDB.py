@@ -14,7 +14,7 @@ class PartDB:
 
     Base.metadata.create_all(self.engine)
 
-  def add_part(self, part):
+  def add(self, part):
     self.session.add(part)
     self.session.commit() 
   
@@ -33,19 +33,11 @@ class PartDB:
   def get_all_parts_by_distributor(self, distributor):
     return self.session.query(Part).filter(Part.distributor == distributor).all()
   
-  def add_footprint(self, footprint):
-    self.session.add(footprint)
-    self.session.commit()
-  
   def get_footprint(self, id):
     return self.session.query(Footprint).get(id)  
   
   def get_all_footprints(self):
     return self.session.query(Footprint).all()  
-  
-  def add_company(self, company):
-    self.session.add(company)
-    self.session.commit()
 
   def get_company(self, id):
     return self.session.query(Company).get(id)
