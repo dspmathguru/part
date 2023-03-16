@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 
+from datetime import datetime
 from typing import List
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Session, DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -105,6 +106,10 @@ class Part(Base):
   orcad_uri: Mapped[str | None] = mapped_column(String(50))
   description: Mapped[str | None] = mapped_column(String(2000))
 
+  bom_items: Mapped[List['BOMItem']] = relationship(
+      back_populates='part', cascade='all, delete-orphan'
+  )
+
   def __repr__(self) -> str:
     return f"<Part(id={self.id!r}, cspnold={self.cspnold!r}, cspn={self.cspn!r}, footprint={self.footprint!r}, description={self.description!r}>"
 
@@ -113,6 +118,11 @@ class BOM(Base):
 
   id: Mapped[int] = mapped_column(primary_key=True)
   name: Mapped[str] = mapped_column(String(50))
+  note: Mapped[str | None] = mapped_column(String(2000))
+  version: Mapped[str | None] = mapped_column(String(10))
+  created: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
+  updated: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
+
   items: Mapped[List['BOMItem']] = relationship(
       back_populates='item', cascade='all, delete-orphan'
   )
@@ -126,6 +136,12 @@ class BOMItem(Base):
   id: Mapped[int] = mapped_column(primary_key=True)
   item_id: Mapped[int] = mapped_column(ForeignKey("bom.id"))
   item: Mapped[BOM] = relationship(back_populates='items')
+  quantity: Mapped[int] = mapped_column(Integer)
+  part_id: Mapped[int] = mapped_column(ForeignKey("part.id"))
+  part: Mapped[Part] = relationship(back_populates='bom_items')
+  reference: Mapped[str] = mapped_column(String(200))
+  assembly: Mapped[str | None] = mapped_column(String(50))
+  note: Mapped[str | None] = mapped_column(String(2000))
 
   def __repr__(self) -> str:
     return f'<BOMItem id={self.id}, item_id={self.item_id}>'
