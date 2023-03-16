@@ -9,3 +9,6 @@ imageio
 sqlalchemy
 psycopg2-binary
 python-dotenv
+pandas
+xlrd
+openpyxl

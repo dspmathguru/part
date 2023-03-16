@@ -16,53 +16,75 @@ class PartDB:
 
   def add(self, part):
     self.session.add(part)
-    self.session.commit() 
-  
-  def get_part(self, id): 
+    self.session.commit()
+
+  def get_company_type(self, id):
+    return self.session.query(CompanyType).get(id)
+
+  def get_all_company_types(self):
+    return self.session.query(CompanyType).all()
+
+  def get_company_type_by_name(self, name):
+    return self.session.query(CompanyType).filter(CompanyType.name == name).first()
+
+  def get_part(self, id):
     return self.session.query(Part).get(id)
-  
+
   def get_all_parts(self):
     return self.session.query(Part).all()
-  
-  def get_all_parts_by_footprint(self, footprint):  
+
+  def get_all_parts_by_type(self, type):
+    return self.session.query(Part).filter(Part.type == type).all()
+
+  def get_part_type(self, id):
+    return self.session.query(PartType).get(id)
+
+  def get_part_type_by_type(self, type):
+    return self.session.query(PartType).filter(PartType.type == type).first()
+
+  def get_all_part_types(self):
+    return self.session.query(PartType).all()
+
+  def get_all_parts_by_footprint(self, footprint):
     return self.session.query(Part).filter(Part.footprint == footprint).all()
-  
+
   def get_all_parts_by_manufacturer(self, manufacturer):
-    return self.session.query(Part).filter(Part.manufacturer == manufacturer).all() 
-  
+    return self.session.query(Part).filter(Part.manufacturer == manufacturer).all()
+
   def get_all_parts_by_distributor(self, distributor):
     return self.session.query(Part).filter(Part.distributor == distributor).all()
-  
+
   def get_footprint(self, id):
-    return self.session.query(Footprint).get(id)  
-  
+    return self.session.query(Footprint).get(id)
+
   def get_all_footprints(self):
-    return self.session.query(Footprint).all()  
+    return self.session.query(Footprint).all()
 
   def get_company(self, id):
     return self.session.query(Company).get(id)
-  
+
   def get_all_companies(self):
     return self.session.query(Company).all()
-  
+
   def add_distributor_part(self, distributor_part):
     self.session.add(distributor_part)
     self.session.commit()
 
   def get_distributor_part(self, id):
     return self.session.query(DistributorPart).get(id)
-  
+
   def get_all_distributor_parts(self):
     return self.session.query(DistributorPart).all()
-  
+
   def add_manufacturer_part(self, manufacturer_part):
     self.session.add(manufacturer_part)
     self.session.commit()
-  
+
   def get_manufacturer_part(self, id):
     return self.session.query(ManufacturerPart).get(id)
-  
+
   def get_all_manufacturer_parts(self):
     return self.session.query(ManufacturerPart).all()
 
-
+  def get_company_by_name(self, name):
+    return self.session.query(Company).filter(Company.name == name).first()
