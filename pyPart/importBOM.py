@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Created on Wed Mar 16 08:28 2023
 
@@ -39,23 +38,22 @@ def importBOM(bom_file, name, version, first_row=0):
   db.add(bom)
 
   if first_row > 0:
-    csv = pd.read_csv(bom_file, skiprows=first_row-1)
+    csv = pd.read_excel(bom_file, skiprows=first_row-1)
   else:
-    csv = pd.read_csv(bom_file)
+    csv = pd.read_excel(bom_file)
 
   csv = csv.dropna(subset=[ITEM, QUANTITY])
   for i, row in csv.iterrows():
-    print("Importing BOM item %s: %s" % (row[ITEM], row[CEPHA_PN]))
-    part = db.get_part_by_cspnold(row[CEPHA_PN])
+    part = db.get_part_by_cspnold(str(int(row[CEPHA_PN])))
     if part is None:
-      print("Part %s not found" % row[CEPHA_PN])
+      print("Part %s not found" % str(int(row[CEPHA_PN])))
       continue
-    print("Found part %s" % part.name)
+    print("Found part %s" % part.cspnold)
     print("Adding BOM item %s: %s" % (row[ITEM], row[PART]))
     bom_item = BOMItem(
         item_id=bom.id,
         quantity=int(row[QUANTITY]),
-        part=part.id,
+        part_id=part.id,
         reference=row[REFERENCE],
         assembly=row[ASSEMBLY]
     )
@@ -67,8 +65,8 @@ def main():
   parser.add_argument('bom_file', help='BOM CSV file')
   parser.add_argument('name', help='BOM name')
   parser.add_argument('version', help='BOM version (e.g. x.y.z))')
-  parser.add_argument('--first_row', type=int,
-                      default=0, help='First row of BOM')
+  parser.add_argument('-f', '--first_row', type=int,
+                      default=12, help='First row of BOM data')
   args = parser.parse_args()
   importBOM(args.bom_file, args.name, args.version, args.first_row)
 

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from typing import List
-from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Session, DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -88,6 +88,9 @@ class DistributorPart(Base):
   part_url: Mapped[str | None] = mapped_column(String(200))
   manufacturer_part_id: Mapped[int] = mapped_column(ForeignKey("manufacturer_part.id"))
   manufacturer_part: Mapped[ManufacturerPart] = relationship(back_populates="distributors")
+  prices: Mapped[List["PartPrice"]] = relationship(
+      back_populates="distributor_part", cascade="all, delete-orphan"
+  )
 
   def __repr__(self) -> str:
     return f"<DistributorPart(id={self.id!r}, manufacturer={self.manufacturer!r}, pn={self.pn!r}>"
@@ -139,9 +142,24 @@ class BOMItem(Base):
   quantity: Mapped[int] = mapped_column(Integer)
   part_id: Mapped[int] = mapped_column(ForeignKey("part.id"))
   part: Mapped[Part] = relationship(back_populates='bom_items')
-  reference: Mapped[str] = mapped_column(String(200))
+  reference: Mapped[str] = mapped_column(String(2000))
   assembly: Mapped[str | None] = mapped_column(String(50))
   note: Mapped[str | None] = mapped_column(String(2000))
 
   def __repr__(self) -> str:
     return f'<BOMItem id={self.id}, item_id={self.item_id}>'
+
+class PartPrice(Base):
+  __tablename__ = 'part_price'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  moq: Mapped[int] = mapped_column(Integer)
+  price: Mapped[float] = mapped_column(Float)
+  currency: Mapped[str] = mapped_column(String(3))
+  distributor_part: Mapped[DistributorPart] = relationship(back_populates='prices')
+  distributor_part_id: Mapped[int] = mapped_column(ForeignKey("distributor_part.id"))
+  created: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
+  updated: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+  def __repr__(self) -> str:
+    return f'<PartPrice id={self.id}, distributor_part_id={self.distributor_part_id}>'

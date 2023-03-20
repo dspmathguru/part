@@ -18,6 +18,10 @@ class PartDB:
     self.session.add(part)
     self.session.commit()
 
+  def delete(self, part):
+    self.session.delete(part)
+    self.session.commit()
+
   def get_company_type(self, id):
     return self.session.query(CompanyType).get(id)
 
@@ -54,6 +58,12 @@ class PartDB:
   def get_all_parts_by_distributor(self, distributor):
     return self.session.query(Part).filter(Part.distributor == distributor).all()
 
+  def get_part_by_cspnold(self, cspnold):
+    return self.session.query(Part).filter(Part.cspnold == str(cspnold)).first()
+
+  def get_part_by_cspn(self, cspn):
+    return self.session.query(Part).filter(Part.cspn == cspn).first()
+
   def get_footprint(self, id):
     return self.session.query(Footprint).get(id)
 
@@ -88,3 +98,12 @@ class PartDB:
 
   def get_company_by_name(self, name):
     return self.session.query(Company).filter(Company.name == name).first()
+
+  def get_bom_by_name_version(self, name, version):
+    return self.session.query(BOM).filter(BOM.name == name).filter(BOM.version == version).first()
+
+  def get_all_manufacturer_parts_by_part_id(self, part_id):
+    return self.session.query(ManufacturerPart).filter(ManufacturerPart.part_id == part_id).all()
+
+  def get_company_by_id(self, id):
+    return self.session.query(Company).filter(Company.id == id).first()
