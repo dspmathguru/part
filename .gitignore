@@ -103,8 +103,13 @@ dist
 # TernJS port file
 .tern-port
 
+# Specific to project
+
 .venv*
 
 .ipynb_checkpoints
 __pycache__
 
+*.ipynb
+*.xlsx
+.DS_Store
