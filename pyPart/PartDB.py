@@ -107,3 +107,6 @@ class PartDB:
 
   def get_company_by_id(self, id):
     return self.session.query(Company).filter(Company.id == id).first()
+
+  def get_manufacturer_part_by_part_id_and_pn(self, part_id, pn):
+    return self.session.query(ManufacturerPart).filter(ManufacturerPart.part_id == part_id).filter(ManufacturerPart.pn == pn).first()

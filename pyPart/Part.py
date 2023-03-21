@@ -83,7 +83,7 @@ class DistributorPart(Base):
   __tablename__ = "distributor_part"
 
   id: Mapped[int] = mapped_column(primary_key=True)
-  company: Mapped[int] = mapped_column(ForeignKey("company.id"))
+  company_id: Mapped[int] = mapped_column(ForeignKey("company.id"))
   pn: Mapped[str] = mapped_column(String(50))
   part_url: Mapped[str | None] = mapped_column(String(200))
   manufacturer_part_id: Mapped[int] = mapped_column(ForeignKey("manufacturer_part.id"))

@@ -29,14 +29,14 @@ company_contact = os.getenv("COMPANY_CONTACT")
 date_string = f'{datetime.now():%Y-%m-%d}'
 
 
-def createRFQ(boms, name, version):
+def createRFQ(boms, name, version, system_qty):
   db = PartDB.PartDB(db_url)
 
   all_parts = dict()
   max_manu_pns = 0
   for bom_arg in boms:
     bom = db.get_bom_by_name_version(bom_arg[0], bom_arg[1])
-    bom_qty = bom_arg[2]
+    bom_qty = int(bom_arg[2])
     if bom is None:
       print("BOM %s not found" % bom_arg[0])
       continue
@@ -44,16 +44,15 @@ def createRFQ(boms, name, version):
 
     for item in bom.items:
       print("Adding RFQ item %s: %s" % (item.part.cspnold, item.part.description))
-      qty = item.quantity * bom_qty
+      qty = int(item.quantity) * bom_qty * system_qty
       part_id = item.part.id
       cspnold = item.part.cspnold
       manufacturers = db.get_all_manufacturer_parts_by_part_id(part_id)
       if len(manufacturers) == 0:
-        print("No manufacturers found for part %s" % item.part.cspnold)
+        print("No manufacturers found for part %s" % cspnold)
         continue
       manu_pns = []
       for manufacturer in manufacturers:
-        print("Adding RFQ item %s: %s" % (item.part.cspnold, item.part.description))
         company = db.get_company_by_id(manufacturer.company).name
         manu_pns.append((company, manufacturer.pn))
       if len(manu_pns) > max_manu_pns:
@@ -91,13 +90,14 @@ def main():
   parser = argparse.ArgumentParser(description='Create a new RFQ')
   parser.add_argument('name', help='RFQ name')
   parser.add_argument('version', help='RFQ version')
+  parser.add_argument('qty', help='RFQ quantity', type=int)
   parser.add_argument('boms', help='bom version qty bom version qty ...', nargs='+')
 
   args = parser.parse_args()
 
   boms = [(a, b, int(c)) for a, b, c in zip(args.boms[0::3], args.boms[1::3], args.boms[2::3])]
   print(boms)
-  createRFQ(boms, args.name, args.version)
+  createRFQ(boms, args.name, args.version, args.qty)
 
 
 if __name__ == '__main__':
