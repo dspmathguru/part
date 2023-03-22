@@ -93,7 +93,7 @@ class DistributorPart(Base):
   )
 
   def __repr__(self) -> str:
-    return f"<DistributorPart(id={self.id!r}, manufacturer={self.manufacturer!r}, pn={self.pn!r}>"
+    return f"<DistributorPart(id={self.id!r}, company_id={self.company_id!r}, pn={self.pn!r}>"
 
 class Part(Base):
   __tablename__ = 'part'
@@ -137,7 +137,7 @@ class BOMItem(Base):
   __tablename__ = 'bom_items'
 
   id: Mapped[int] = mapped_column(primary_key=True)
-  item_id: Mapped[int] = mapped_column(ForeignKey("bom.id"))
+  bom_id: Mapped[int] = mapped_column(ForeignKey("bom.id"))
   item: Mapped[BOM] = relationship(back_populates='items')
   quantity: Mapped[int] = mapped_column(Integer)
   part_id: Mapped[int] = mapped_column(ForeignKey("part.id"))
@@ -147,7 +147,7 @@ class BOMItem(Base):
   note: Mapped[str | None] = mapped_column(String(2000))
 
   def __repr__(self) -> str:
-    return f'<BOMItem id={self.id}, item_id={self.item_id}>'
+    return f'<BOMItem id={self.id}, bom_id={self.bom_id}>'
 
 class PartPrice(Base):
   __tablename__ = 'part_price'

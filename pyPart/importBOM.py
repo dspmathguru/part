@@ -51,7 +51,7 @@ def importBOM(bom_file, name, version, first_row=0):
     print("Found part %s" % part.cspnold)
     print("Adding BOM item %s: %s" % (row[ITEM], row[PART]))
     bom_item = BOMItem(
-        item_id=bom.id,
+        bom_id=bom.id,
         quantity=int(row[QUANTITY]),
         part_id=part.id,
         reference=row[REFERENCE],

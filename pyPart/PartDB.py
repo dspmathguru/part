@@ -110,3 +110,19 @@ class PartDB:
 
   def get_manufacturer_part_by_part_id_and_pn(self, part_id, pn):
     return self.session.query(ManufacturerPart).filter(ManufacturerPart.part_id == part_id).filter(ManufacturerPart.pn == pn).first()
+
+  def get_bom_by_name_and_version(self, name, version):
+    return self.session.query(BOM).filter(BOM.name == name).filter(BOM.version == version).first()
+
+  def get_bom_items_by_bom_id(self, bom_id):
+    return self.session.query(BOMItem).filter(BOMItem.bom_id == bom_id).all()
+
+  def get_part_by_id(self, id):
+    return self.session.query(Part).filter(Part.id == id).first()
+
+  def get_distributor_parts_by_part_id(self, part_id):
+    query = self.session.query(ManufacturerPart.part_id, DistributorPart).join(DistributorPart)
+    return query.filter(ManufacturerPart.part_id == part_id).all()
+
+  def get_part_prices_by_distributor_part_id(self, distributor_part_id):
+    return self.session.query(PartPrice).filter(PartPrice.distributor_part_id == distributor_part_id).all()
