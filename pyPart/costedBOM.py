@@ -33,6 +33,9 @@ def costedBOM(bom_name, bom_version):
 
   costed_bom['items'] = []
   for item in bom_items:
+    if item.reference == 'DNI':
+      continue
+
     print("Item:", item.bom_id, item.quantity, item.reference, item.assembly)
     part = db.get_part_by_id(item.part_id)
     print("part:", part.id, part.cspnold, part.description)
@@ -43,6 +46,7 @@ def costedBOM(bom_name, bom_version):
         'quantity': item.quantity,
         'reference': item.reference,
         'part_id': part.id,
+        'description': part.description,
         'distributor_parts': []
     }
     for ignore, distributor_part in distributor_parts:
@@ -50,7 +54,6 @@ def costedBOM(bom_name, bom_version):
       distributor = db.get_company_by_id(distributor_part.company_id)
       print("Distributor:", distributor.name)
       prices = db.get_part_prices_by_distributor_part_id(distributor_part.id)
-
       costed_item['distributor_parts'].append({
           'pn': distributor_part.pn,
           'distributor': distributor.name,
@@ -66,9 +69,15 @@ def costedBOM(bom_name, bom_version):
       xls.at[i, 'price%d' % j] = distributor_part['price']
       xls.at[i, 'total%d' % j] = distributor_part['price'] * row['quantity']
   xls = xls.drop(columns=['distributor_parts'])
-  xls.loc['Total'] = xls['total0'].sum()
+  total0 = xls['total0'].sum()
+  xls.loc['Total'] = [''] * len(xls.columns)
+  xls.at['Total', 'total0'] = total0
+  xls.fillna('', inplace=True)
   xls_file = '%s-%s-%s.xlsx' % (bom_name, bom_version, date_string)
   xls.to_excel(xls_file)
+
+  print("Wrote %s" % xls_file)
+  print("Total: %s" % total0)
 
 
 def main():

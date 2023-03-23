@@ -43,6 +43,9 @@ def createRFQ(boms, name, version, system_qty):
     print("Found BOM %s" % bom.name)
 
     for item in bom.items:
+      if item.reference == 'DNI':
+        continue
+
       print("Adding RFQ item %s: %s" % (item.part.cspnold, item.part.description))
       qty = int(item.quantity) * bom_qty * system_qty
       part_id = item.part.id
@@ -84,6 +87,8 @@ def createRFQ(boms, name, version, system_qty):
   xls = xls.drop(columns=['manu_pns'])
   xls_name = '%s-%s-%s.xlsx' % (name, version, date_string)
   xls.to_excel(xls_name, index_label='CSPNOLD')
+
+  print("Created %s" % xls_name)
 
 
 def main():
