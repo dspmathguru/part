@@ -32,13 +32,16 @@ def getDistributorPart(db, distributor, part, manufacturer_part, distributor_pn)
   return distributor_part
 
 def addPrices(distributor_name, xls_file, sheet_name, part_col, price_col, moq_col, manufacturer_pn_col, distributor_pn_col=None):
+  print("XLS file: %s" % xls_file)
   db = PartDB.PartDB(db_url)
   distributor = findDistributor(db, distributor_name)
   print("Distributor:", distributor.name)
   xls = pd.read_excel(xls_file, sheet_name=sheet_name)
+  print(xls.head())
   xls = xls.dropna(subset=[part_col, price_col])
+  part_not_found = 0
   for index, row in xls.iterrows():
-    if float(row[price_col]) < 0.0000001:
+    if type(row[price_col]) == str or float(row[price_col]) < 0.0000001:
       continue
     part = db.get_part_by_cspnold(row[part_col])
     if moq_col is not None:
@@ -47,6 +50,7 @@ def addPrices(distributor_name, xls_file, sheet_name, part_col, price_col, moq_c
       moq = 0
     if part is None:
       print("Part %s not found" % row[part_col])
+      part_not_found += 1
       continue
     print("Found part %s at price %f" % (part.cspnold, row[price_col]))
     if manufacturer_pn_col:
@@ -67,6 +71,7 @@ def addPrices(distributor_name, xls_file, sheet_name, part_col, price_col, moq_c
       db.add(part_price)
     else:
       print("No manufacturer part specified")
+  print("Parts not found: %d" % part_not_found)
 
 def main():
   parser = argparse.ArgumentParser(description='Add prices to parts')
@@ -80,7 +85,13 @@ def main():
   parser.add_argument('--distributor_pn_col',
                       help='Excel column with distributor part number', default=None)
   args = parser.parse_args()
-  addPrices(args.distributor, args.xls_file, args.sheet_name, args.part_col,
+
+  xls_file = os.path.expanduser(args.xls_file)
+  if not os.path.isfile(xls_file):
+    print("XLS file %s not found" % xls_file)
+    sys.exit(1)
+
+  addPrices(args.distributor, xls_file, args.sheet_name, args.part_col,
             args.price_col, args.moq_col, args.manufacturer_pn_col, args.distributor_pn_col)
 
 

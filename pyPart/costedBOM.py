@@ -53,8 +53,17 @@ def costedBOM(bom_name, bom_version):
       print("Distributor part:", distributor_part.pn)
       distributor = db.get_company_by_id(distributor_part.company_id)
       print("Distributor:", distributor.name)
+      manufacturer_company = db.get_company_by_id(distributor_part.manufacturer_part_id)
+      if manufacturer_company is None:
+        manufacturer_company_name = ''
+      else:
+        manufacturer_company_name = manufacturer_company.name
+
+      manufacturer_pn = db.get_manufacturer_part_by_id(distributor_part.manufacturer_part_id).pn
       prices = db.get_part_prices_by_distributor_part_id(distributor_part.id)
       costed_item['distributor_parts'].append({
+          'manufacturer': manufacturer_company_name,
+          'manufacturer_pn': manufacturer_pn,
           'pn': distributor_part.pn,
           'distributor': distributor.name,
           'price': prices[0].price,
@@ -66,6 +75,8 @@ def costedBOM(bom_name, bom_version):
     for j, distributor_part in enumerate(row['distributor_parts']):
       xls.at[i, 'pn%d' % j] = distributor_part['pn']
       xls.at[i, 'distributor%d' % j] = distributor_part['distributor']
+      xls.at[i, 'manufacturer%d' % j] = distributor_part['manufacturer']
+      xls.at[i, 'manufacturer_pn%d' % j] = distributor_part['manufacturer_pn']
       xls.at[i, 'price%d' % j] = distributor_part['price']
       xls.at[i, 'total%d' % j] = distributor_part['price'] * row['quantity']
   xls = xls.drop(columns=['distributor_parts'])

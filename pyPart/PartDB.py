@@ -126,3 +126,6 @@ class PartDB:
 
   def get_part_prices_by_distributor_part_id(self, distributor_part_id):
     return self.session.query(PartPrice).filter(PartPrice.distributor_part_id == distributor_part_id).all()
+
+  def get_manufacturer_part_by_id(self, id):
+    return self.session.query(ManufacturerPart).filter(ManufacturerPart.id == id).first()

@@ -33,6 +33,7 @@ MPN2 = 'MPN2'
 
 
 def importBOM(bom_file, name, version, first_row=0):
+  print("BOM file: %s" % bom_file)
   db = PartDB.PartDB(db_url)
   bom = BOM(name=name, version=version)
   db.add(bom)
@@ -43,10 +44,12 @@ def importBOM(bom_file, name, version, first_row=0):
     csv = pd.read_excel(bom_file)
 
   csv = csv.dropna(subset=[ITEM, QUANTITY])
+  not_found = 0
   for i, row in csv.iterrows():
     part = db.get_part_by_cspnold(str(int(row[CEPHA_PN])))
     if part is None:
       print("Part %s not found" % str(int(row[CEPHA_PN])))
+      not_found += 1
       continue
     print("Found part %s" % part.cspnold)
     print("Adding BOM item %s: %s" % (row[ITEM], row[PART]))
@@ -59,6 +62,8 @@ def importBOM(bom_file, name, version, first_row=0):
     )
     db.add(bom_item)
 
+  print("Not found: %d" % not_found)
+
 
 def main():
   parser = argparse.ArgumentParser(description='Import BOM from CSV file')
@@ -68,7 +73,13 @@ def main():
   parser.add_argument('-f', '--first_row', type=int,
                       default=12, help='First row of BOM data')
   args = parser.parse_args()
-  importBOM(args.bom_file, args.name, args.version, args.first_row)
+
+  bom_file = os.path.expanduser(args.bom_file)
+  if not os.path.isfile(bom_file):
+    print("BOM file %s not found" % bom_file)
+    sys.exit(1)
+
+  importBOM(bom_file, args.name, args.version, args.first_row)
 
 
 if __name__ == '__main__':
