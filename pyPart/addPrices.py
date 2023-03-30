@@ -31,12 +31,12 @@ def getDistributorPart(db, distributor, part, manufacturer_part, distributor_pn)
     db.add(distributor_part)
   return distributor_part
 
-def addPrices(distributor_name, xls_file, sheet_name, part_col, price_col, moq_col, manufacturer_pn_col, distributor_pn_col=None):
+def addPrices(distributor_name, xls_file, sheet_name, part_col, price_col, moq_col, manufacturer_pn_col, distributor_pn_col=None, start_row=1):
   print("XLS file: %s" % xls_file)
   db = PartDB.PartDB(db_url)
   distributor = findDistributor(db, distributor_name)
   print("Distributor:", distributor.name)
-  xls = pd.read_excel(xls_file, sheet_name=sheet_name)
+  xls = pd.read_excel(xls_file, sheet_name=sheet_name, skiprows=start_row-1)
   print(xls.head())
   xls = xls.dropna(subset=[part_col, price_col])
   part_not_found = 0
@@ -84,6 +84,7 @@ def main():
   parser.add_argument('--moq_col', help='Excel column with MOQ', default=None)
   parser.add_argument('--distributor_pn_col',
                       help='Excel column with distributor part number', default=None)
+  parser.add_argument('--start_row', help='Excel row to start from', type=int, default=1)
   args = parser.parse_args()
 
   xls_file = os.path.expanduser(args.xls_file)
@@ -92,7 +93,7 @@ def main():
     sys.exit(1)
 
   addPrices(args.distributor, xls_file, args.sheet_name, args.part_col,
-            args.price_col, args.moq_col, args.manufacturer_pn_col, args.distributor_pn_col)
+            args.price_col, args.moq_col, args.manufacturer_pn_col, args.distributor_pn_col, args.start_row)
 
 
 if __name__ == "__main__":

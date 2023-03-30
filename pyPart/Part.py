@@ -1,8 +1,9 @@
 #! /usr/bin/env python
 
 from datetime import datetime
+import enum
 from typing import List
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Session, DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -163,3 +164,29 @@ class PartPrice(Base):
 
   def __repr__(self) -> str:
     return f'<PartPrice id={self.id}, distributor_part_id={self.distributor_part_id}>'
+
+
+class UserType(enum.Enum):
+  ADMIN = 'admin'
+  DEVELOPER = 'developer'
+  OPERATIONS = 'operations'
+  ACCOUNTING = 'accounting'
+  ENGINEERING = 'engineering'
+  SALES = 'sales'
+
+class User(Base):
+  __tablename__ = 'user'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  username: Mapped[str] = mapped_column(String(50))
+  password: Mapped[str] = mapped_column(String(2048))
+  phone: Mapped[str] = mapped_column(String(50))
+  email: Mapped[str] = mapped_column(String(50))
+  role: Mapped[str] = mapped_column(String(50))
+  user_type: Mapped[UserType] = mapped_column(Enum(UserType))
+  product_key: Mapped[str | None] = mapped_column(String(50))
+  created: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
+  updated: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+  def __repr__(self) -> str:
+    return f'<User id={self.id}, username={self.username}>'

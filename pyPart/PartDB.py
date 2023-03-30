@@ -5,6 +5,13 @@ from sqlalchemy.orm import Session
 
 from Part import *
 
+import os
+import dotenv
+
+dotenv.load_dotenv()
+
+db_url = os.getenv("DATABASE_URL")
+
 class PartDB:
   def __init__(self, db):
     self.db = db
@@ -129,3 +136,7 @@ class PartDB:
 
   def get_manufacturer_part_by_id(self, id):
     return self.session.query(ManufacturerPart).filter(ManufacturerPart.id == id).first()
+
+
+if __name__ == '__main__':
+  db = PartDB(db_url)

@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model bom {
+  id        Int         @id @default(autoincrement())
+  name      String      @db.VarChar(50)
+  note      String?     @db.VarChar(2000)
+  version   String?     @db.VarChar(10)
+  created   DateTime    @db.Timestamp(6)
+  updated   DateTime    @db.Timestamp(6)
+  bom_items bom_items[]
+}
+
+model bom_items {
+  id        Int     @id @default(autoincrement())
+  bom_id    Int
+  quantity  Int
+  part_id   Int
+  reference String  @db.VarChar(2000)
+  assembly  String? @db.VarChar(50)
+  note      String? @db.VarChar(2000)
+  bom       bom     @relation(fields: [bom_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  part      part    @relation(fields: [part_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model company {
+  id                                                   Int                 @id @default(autoincrement())
+  name                                                 String              @db.VarChar(50)
+  company_type                                         Int
+  street                                               String?             @db.VarChar(50)
+  city                                                 String?             @db.VarChar(50)
+  state                                                String?             @db.VarChar(50)
+  zip                                                  String?             @db.VarChar(50)
+  country                                              String?             @db.VarChar(50)
+  phone                                                String?             @db.VarChar(50)
+  email                                                String?             @db.VarChar(50)
+  website                                              String?             @db.VarChar(50)
+  contact                                              String?             @db.VarChar(50)
+  company_type_company_company_typeTocompany_type      company_type        @relation("company_company_typeTocompany_type", fields: [company_type], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  distributor_part                                     distributor_part[]
+  manufacturer_part_manufacturer_part_companyTocompany manufacturer_part[] @relation("manufacturer_part_companyTocompany")
+}
+
+model company_type {
+  id                                         Int       @id @default(autoincrement())
+  name                                       String    @db.VarChar(50)
+  company_company_company_typeTocompany_type company[] @relation("company_company_typeTocompany_type")
+}
+
+model distributor_part {
+  id                   Int               @id @default(autoincrement())
+  company_id           Int
+  pn                   String            @db.VarChar(50)
+  part_url             String?           @db.VarChar(200)
+  manufacturer_part_id Int
+  company              company           @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  manufacturer_part    manufacturer_part @relation(fields: [manufacturer_part_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  part_price           part_price[]
+}
+
+model footprint {
+  id                             Int     @id @default(autoincrement())
+  name                           String  @db.VarChar(50)
+  description                    String? @db.VarChar(200)
+  part_part_footprintTofootprint part[]  @relation("part_footprintTofootprint")
+}
+
+model manufacturer_part {
+  id                                         Int                @id @default(autoincrement())
+  company                                    Int
+  pn                                         String             @db.VarChar(50)
+  part_url                                   String?            @db.VarChar(200)
+  datasheet_url                              String?            @db.VarChar(200)
+  description                                String?            @db.VarChar(2000)
+  part_id                                    Int
+  distributor_part                           distributor_part[]
+  company_manufacturer_part_companyTocompany company            @relation("manufacturer_part_companyTocompany", fields: [company], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  part                                       part               @relation(fields: [part_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model part {
+  id                                  Int                 @id @default(autoincrement())
+  cspnold                             String              @db.VarChar(50)
+  cspn                                String              @db.VarChar(50)
+  footprint                           Int?
+  type                                Int
+  orcad_uri                           String?             @db.VarChar(50)
+  description                         String?             @db.VarChar(2000)
+  bom_items                           bom_items[]
+  manufacturer_part                   manufacturer_part[]
+  footprint_part_footprintTofootprint footprint?          @relation("part_footprintTofootprint", fields: [footprint], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  part_type                           part_type           @relation(fields: [type], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model part_price {
+  id                  Int              @id @default(autoincrement())
+  moq                 Int
+  price               Float
+  currency            String           @db.VarChar(3)
+  distributor_part_id Int
+  created             DateTime         @db.Timestamp(6)
+  updated             DateTime         @db.Timestamp(6)
+  distributor_part    distributor_part @relation(fields: [distributor_part_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model part_type {
+  id          Int     @id @default(autoincrement())
+  type        String  @db.VarChar(50)
+  prefix      String  @db.VarChar(10)
+  version     String? @db.VarChar(10)
+  description String? @db.VarChar(200)
+  part        part[]
+}
+
+model user {
+  id        Int      @id @default(autoincrement())
+  username  String   @db.VarChar(50)
+  password  String   @db.VarChar(2048)
+  email     String   @db.VarChar(50)
+  role      String   @db.VarChar(50)
+  user_type usertype
+  created   DateTime @db.Timestamp(6)
+  updated   DateTime @db.Timestamp(6)
+}
+
+enum usertype {
+  ADMIN
+  DEVELOPER
+  OPERATIONS
+  ACCOUNTING
+  ENGINEERING
+  SALES
+}
