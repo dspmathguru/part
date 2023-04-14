@@ -1,4 +1,4 @@
-import { Body, Controller, Param, ParseEnumPipe, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseEnumPipe, Post, UnauthorizedException } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
