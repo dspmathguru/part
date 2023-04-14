@@ -13,13 +13,18 @@ import pandas as pd
 from Part import *
 import PartDB
 
+import platform
 import dotenv
 
 dotenv.load_dotenv()
 
 db_url = os.getenv("DATABASE_URL")
-parts_xls = os.getenv("PARTS_XLS")
-part_types_csv = os.getenv("PART_TYPES_CSV")
+if platform.system() == 'Linux':
+  parts_xls = os.path.expanduser(os.getenv("PARTS_XLS_LIN"))
+  part_types_csv = os.path.expanduser(os.getenv("PART_TYPES_CSV_LIN"))
+else:
+  parts_xls = os.path.expanduser(os.getenv("PARTS_XLS_OSX"))
+  part_types_csv = os.path.expanduser(os.getenv("PART_TYPES_CSV_OSX"))
 
 PN = 'CEPHA P/N'
 ITEM = 'Item'
