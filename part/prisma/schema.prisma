@@ -12,8 +12,8 @@ model bom {
   name      String      @db.VarChar(50)
   note      String?     @db.VarChar(2000)
   version   String?     @db.VarChar(10)
-  created   DateTime    @db.Timestamp(6)
-  updated   DateTime    @db.Timestamp(6)
+  created   DateTime    @default(now())
+  updated   DateTime    @updatedAt()
   bom_items bom_items[]
 }
 
@@ -104,8 +104,8 @@ model part_price {
   price               Float
   currency            String           @db.VarChar(3)
   distributor_part_id Int
-  created             DateTime         @db.Timestamp(6)
-  updated             DateTime         @db.Timestamp(6)
+  created             DateTime         @default(now())
+  updated             DateTime         @updatedAt()
   distributor_part    distributor_part @relation(fields: [distributor_part_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -125,8 +125,8 @@ model user {
   email     String   @db.VarChar(50)
   role      String   @db.VarChar(50)
   user_type usertype
-  created   DateTime @db.Timestamp(6)
-  updated   DateTime @db.Timestamp(6)
+  created   DateTime @default(now())
+  updated   DateTime @updatedAt()
 }
 
 enum usertype {

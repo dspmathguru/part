@@ -1,4 +1,7 @@
-import { Body, Controller, Get, Param, ParseEnumPipe, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseEnumPipe, Post, UnauthorizedException } from '@nestjs/common'
+import { SignupDto } from '../dtos/auth.dtos'
+import { AuthService } from './auth.service'
+import { usertype } from '@prisma/client'
 
 @Controller('auth')
 export class AuthController {
@@ -6,10 +9,10 @@ export class AuthController {
   @Post('/signup/:userType')
   signup(
     @Body() body: SignupDto, 
-    @Param('userType', new ParseEnumPipe(UserType)) userType: UserType
+    @Param('userType', new ParseEnumPipe(usertype)) userType: usertype
   ) {
 
-    if (userType !== UserType.BUYER) {
+    if (userType !== usertype.ADMIN) {
       if (!body.productKey) {
         throw new UnauthorizedException()
       }
