@@ -19,12 +19,9 @@ import dotenv
 dotenv.load_dotenv()
 
 db_url = os.getenv("DATABASE_URL")
-if platform.system() == 'Linux':
-  parts_xls = os.path.expanduser(os.getenv("PARTS_XLS_LIN"))
-  part_types_csv = os.path.expanduser(os.getenv("PART_TYPES_CSV_LIN"))
-else:
-  parts_xls = os.path.expanduser(os.getenv("PARTS_XLS_OSX"))
-  part_types_csv = os.path.expanduser(os.getenv("PART_TYPES_CSV_OSX"))
+print(os.getenv("PARTS_XLS"))
+parts_xls = os.path.expanduser(os.getenv("PARTS_XLS"))
+part_types_csv = os.path.expanduser(os.getenv("PART_TYPES_CSV"))
 
 PN = 'CEPHA P/N'
 ITEM = 'Item'
@@ -138,7 +135,7 @@ def importParts(df, pt_df):
 
 def importPartsFromXLS():
   print("Importing parts from %s" % parts_xls)
-  df = pd.read_excel(parts_xls, sheet_name='Master Inventory BOM')
+  df = pd.read_excel(parts_xls, sheet_name='Master Parts List')
   df = df.dropna(subset=[ITEM, PN])
   df = df[[ITEM, PN, DESCRIPTION, FOOTPRINT, MFR1, MFR1PN, MFR2, MFR2PN]]
   dfPT = pd.read_csv(part_types_csv)
