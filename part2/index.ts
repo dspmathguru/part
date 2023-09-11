@@ -24,7 +24,7 @@ async function main() {
   const post = await prisma.user.update({
     where: { id: 1 },
     data: { 
-      role: 'cool dude',
+      role: 'cool dudes are us',
       updated: new Date()
     },
   })
