@@ -141,8 +141,8 @@ def importPartsFromXLS():
   dfPT = pd.read_csv(part_types_csv)
 
   importCompanyTypes()
-  mfrs = df[MFR1]
-  mfrs = mfrs.append(df[MFR2]).dropna().unique()
+  mfrs1 = df[MFR1]
+  mfrs = pd.concat([mfrs1, df[MFR2]]).dropna().unique()
   importMfr(mfrs)
   footprints = df[FOOTPRINT].dropna().unique()
   importFootprint(footprints)

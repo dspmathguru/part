@@ -138,6 +138,19 @@ CREATE TABLE "user" (
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "session" (
+    "id" VARCHAR NOT NULL,
+    "sid" VARCHAR(50) NOT NULL,
+    "data" VARCHAR(2048) NOT NULL,
+    "expiresAt" TIMESTAMP(6) NOT NULL,
+
+    CONSTRAINT "session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "session_sid_key" ON "session"("sid");
+
 -- AddForeignKey
 ALTER TABLE "bom_items" ADD CONSTRAINT "bom_items_bom_id_fkey" FOREIGN KEY ("bom_id") REFERENCES "bom"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 

@@ -1,3 +1,4 @@
+import bcrypt = require('bcryptjs')
 import { builder } from '../builder'
 import { prisma } from '../db'
 
@@ -28,6 +29,7 @@ const UserCreateInput = builder.inputType('UserCreateInput', {
     role: t.string({ required: true }),
     user_type: t.string({ required: true }),
     product_key: t.string({ required: true }),
+    phone: t.string({ required: true }),
   }),
 })
 
@@ -47,16 +49,31 @@ builder.mutationFields((t) => ({
         required: true,
       }),
     },
-    resolve: (query, parent, args) => {
+    resolve: async (query, parent, args) => {
+      const exists = await prisma.user.count({
+        where: {
+          email: args.data.email
+        }
+      })
+      if (exists) throw new Error('email already exists')
+      const exists2 = await prisma.user.count({
+        where: {
+          username: args.data.username
+        }
+      })
+      if (exists2) throw new Error('username already exists')
+      const salt = bcrypt.genSaltSync(10)
+      const password = bcrypt.hashSync(args.data.password, salt)
       return prisma.user.create({
         ...query,
         data: {
           email: args.data.email,
           username: args.data.username,
-          password: args.data.password,
+          password: password,
           role: args.data.role,
           user_type: args.data.user_type,
           product_key: args.data.product_key,
+          phone: args.data.phone,
           created: new Date(),
           updated: new Date(),
         },

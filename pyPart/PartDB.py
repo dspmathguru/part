@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session as SessionBase
 
 from Part import *
 
@@ -17,7 +17,7 @@ class PartDB:
     self.db = db
     print('db:', db)
     self.engine = create_engine(db)
-    self.session = Session(self.engine)
+    self.session = SessionBase(self.engine)
 
     Base.metadata.create_all(self.engine)
 

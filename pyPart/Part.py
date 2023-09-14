@@ -190,3 +190,14 @@ class User(Base):
 
   def __repr__(self) -> str:
     return f'<User id={self.id}, username={self.username}>'
+
+class Session(Base):
+  __tablename__ = 'session'
+
+  id: Mapped[str] = mapped_column(primary_key=True)
+  sid: Mapped[str] = mapped_column(String(50), unique=True)
+  data: Mapped[str] = mapped_column(String(2048))
+  expiresAt: Mapped[DateTime] = mapped_column(DateTime)
+
+  def __repr__(self) -> str:
+    return f'<Session id={self.id}, user_id={self.sid}>'

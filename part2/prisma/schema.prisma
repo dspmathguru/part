@@ -135,6 +135,13 @@ model user {
   updated     DateTime @db.Timestamp(6)
 }
 
+model session {
+  id        String   @id @db.VarChar
+  sid       String   @unique @db.VarChar(50)
+  data      String   @db.VarChar(2048)
+  expiresAt DateTime @db.Timestamp(6)
+}
+
 enum usertype {
   ADMIN
   DEVELOPER
