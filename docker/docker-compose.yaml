@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: 'postgres:latest'
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: ${PGRS_PASSWORD}
+    networks:
+      - postgres-network
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data/
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    networks:
+      - postgres-network
+
+networks:
+  postgres-network:
+    driver: bridge
+
