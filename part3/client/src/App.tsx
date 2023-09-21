@@ -24,7 +24,7 @@ interface Users extends Array< {
 
 function DisplayUsers() {
   const { loading, error, data } = useQuery(ALL_USERS);
-  const allUsers: Users = data.allUsers
+  const allUsers: Users = data?.allUsers
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error : {error.message}</p>

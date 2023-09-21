@@ -21,6 +21,13 @@ export const UserUniqueInput = builder.inputType('UserUniqueInput', {
   }),
 })
 
+export const LoginUserInput = builder.inputType('LoginUserInput', {
+  fields: (t) => ({
+    email: t.string({ required: true }),
+    password: t.string({ required: true }),
+  }),
+})
+
 const UserCreateInput = builder.inputType('UserCreateInput', {
   fields: (t) => ({
     email: t.string({ required: true }),
@@ -36,7 +43,11 @@ const UserCreateInput = builder.inputType('UserCreateInput', {
 builder.queryFields((t) => ({
   allUsers: t.prismaField({
     type: ['user'],
-    resolve: (query) => prisma.user.findMany({ ...query }),
+    resolve: (query, parent, args, context) => {
+      console.log('context', context)
+      if (!context.authScopes.isAuthorized) throw new Error('not authorized')
+      return prisma.user.findMany({ ...query })
+    }
   }),
 }))
 
@@ -80,4 +91,45 @@ builder.mutationFields((t) => ({
       })
     },
   }),
+}))
+
+builder.mutationFields((t) => ({
+  loginUser: t.prismaField({
+    type: 'user',
+    args: {
+      data: t.arg({
+        type: LoginUserInput,
+        required: true,
+      }),
+    },
+    resolve: async (query, parent, args, ctx) => {
+      const user = await prisma.user.findFirst({
+        where: {
+          email: args.data.email
+        }
+      })
+      if (!user) throw new Error('email not found')
+      const valid = bcrypt.compareSync(args.data.password, user.password)
+
+      if (!valid) throw new Error('invalid password')
+
+      ctx.user = {
+        id: user.id.toString(),
+        role: user.role,
+      }
+      
+      return user
+    }
+  })
+}))
+
+builder.mutationFields((t) => ({
+  logoutUser: t.field({
+    type: 'String',
+    args: {},
+    resolve: (root, args, ctx) => {
+      ctx.user = undefined
+      return 'logged out'
+    }
+  })
 }))
