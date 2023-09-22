@@ -6,7 +6,7 @@ matplotlib
 halo
 Pillow
 imageio
-sqlalchemy
+sqlalchemy>=2
 psycopg2-binary
 python-dotenv
 pandas
