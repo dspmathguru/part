@@ -12,7 +12,7 @@ python-dotenv
 pandas
 xlrd
 openpyxl
-graphene
+Flask>=2
+GraphQL-Server
+graphene>=3.0
 graphene_sqlalchemy
-Flask
-Flask-GraphQL

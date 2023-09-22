@@ -56,7 +56,7 @@ def createRFQ(boms, name, version, system_qty):
         continue
       manu_pns = []
       for manufacturer in manufacturers:
-        company = db.get_company_by_id(manufacturer.company).name
+        company = db.get_company_by_id(manufacturer.company_id).name
         manu_pns.append((company, manufacturer.pn))
       if len(manu_pns) > max_manu_pns:
         max_manu_pns = len(manu_pns)

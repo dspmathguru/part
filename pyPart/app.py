@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from flask import Flask
-from flask_graphql import GraphQLView
+from graphql_server.flask import GraphQLView
 from sqlalchemy.orm import (scoped_session, sessionmaker, relationship, backref)
 from sqlalchemy import create_engine
 

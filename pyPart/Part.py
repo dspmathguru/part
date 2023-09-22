@@ -34,7 +34,8 @@ class Company(Base):
 
   id: Mapped[int] = mapped_column(primary_key=True)
   name: Mapped[str] = mapped_column(String(50))
-  company_type: Mapped[CompanyType] = mapped_column(ForeignKey("company_type.id"))
+  company_type_id: Mapped[CompanyType] = mapped_column(ForeignKey("company_type.id"))
+  company_type: Mapped[CompanyType] = relationship("CompanyType")
   street: Mapped[str | None] = mapped_column(String(50))
   city: Mapped[str | None] = mapped_column(String(50))
   state: Mapped[str | None] = mapped_column(String(50))
@@ -64,7 +65,8 @@ class ManufacturerPart(Base):
   __tablename__ = "manufacturer_part"
 
   id: Mapped[int] = mapped_column(primary_key=True)
-  company: Mapped[int] = mapped_column(ForeignKey("company.id"))
+  company_id: Mapped[int] = mapped_column(ForeignKey("company.id"))
+  company: Mapped[Company] = relationship("Company")
   pn: Mapped[str] = mapped_column(String(50))
   part_url: Mapped[str | None] = mapped_column(String(200))
   datasheet_url: Mapped[str | None] = mapped_column(String(200))
@@ -85,6 +87,7 @@ class DistributorPart(Base):
 
   id: Mapped[int] = mapped_column(primary_key=True)
   company_id: Mapped[int] = mapped_column(ForeignKey("company.id"))
+  company: Mapped[Company] = relationship("Company")
   pn: Mapped[str] = mapped_column(String(50))
   part_url: Mapped[str | None] = mapped_column(String(200))
   manufacturer_part_id: Mapped[int] = mapped_column(ForeignKey("manufacturer_part.id"))
@@ -105,8 +108,10 @@ class Part(Base):
   manufacturers: Mapped[List[ManufacturerPart]] = relationship(
       back_populates="parts", cascade="all, delete-orphan"
   )
-  footprint: Mapped[Footprint | None] = mapped_column(ForeignKey("footprint.id"))
-  type: Mapped[int] = mapped_column(ForeignKey("part_type.id"))
+  footprint_id: Mapped[Footprint | None] = mapped_column(ForeignKey("footprint.id"))
+  footprint: Mapped[Footprint | None] = relationship("Footprint")
+  parttype_id: Mapped[int] = mapped_column(ForeignKey("part_type.id"))
+  parttype: Mapped[PartType] = relationship("PartType")
   orcad_uri: Mapped[str | None] = mapped_column(String(50))
   description: Mapped[str | None] = mapped_column(String(2000))
 

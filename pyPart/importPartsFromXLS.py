@@ -56,7 +56,7 @@ def importMfr(mfrs):
   mfr_type = db.get_company_type_by_name('manufacturer')
   for mfr in mfrs:
     print("Importing manufacturer %s" % mfr)
-    db.add(Company(name=mfr, company_type=mfr_type.id))
+    db.add(Company(name=mfr, company_type_id=mfr_type.id, company_type=mfr_type))
 
 def importFootprint(footprints):
   for footprint in footprints:
@@ -111,12 +111,14 @@ def importParts(df, pt_df):
     print("Importing part %d - %s" % (int(row[PN]), row[DESCRIPTION]))
     part_type, prefix = findPartType(row[PN], pt_df)
     pn = createPartNumber(prefix)
-    part = Part(cspn=pn, cspnold=str(int(row[PN])), type=part_type.id, description=row[DESCRIPTION])
+    part = Part(cspn=pn, cspnold=str(
+        int(row[PN])), parttype_id=part_type.id, parttype=part_type, description=row[DESCRIPTION])
     db.add(part)
     if not pd.isna(row[MFR1]):
       mfr = db.get_company_by_name(row[MFR1])
       mfr_part = ManufacturerPart(
-          company=mfr.id,
+          company_id=mfr.id,
+          company=mfr,
           pn=str(row[MFR1PN]),
           part_id=part.id,
           description=row[DESCRIPTION],
@@ -125,7 +127,8 @@ def importParts(df, pt_df):
     if not pd.isna(row[MFR2]):
       mfr = db.get_company_by_name(row[MFR2])
       mfr_part = ManufacturerPart(
-          company=mfr.id,
+          company_id=mfr.id,
+          company=mfr,
           pn=str(row[MFR2PN]),
           part_id=part.id,
           description=row[DESCRIPTION],
