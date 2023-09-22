@@ -4,12 +4,12 @@ from datetime import datetime
 import enum
 from typing import List
 from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import Session, DeclarativeBase
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
-class Base(DeclarativeBase):
-  pass
-
+Base = declarative_base()
 class Footprint(Base):
   __tablename__ = 'footprint'
 
@@ -191,8 +191,8 @@ class User(Base):
   def __repr__(self) -> str:
     return f'<User id={self.id}, username={self.username}>'
 
-class Session(Base):
-  __tablename__ = 'session'
+class JavaScriptSession(Base):
+  __tablename__ = 'java_script_session'
 
   id: Mapped[str] = mapped_column(primary_key=True)
   sid: Mapped[str] = mapped_column(String(50), unique=True)
@@ -200,4 +200,4 @@ class Session(Base):
   expiresAt: Mapped[DateTime] = mapped_column(DateTime)
 
   def __repr__(self) -> str:
-    return f'<Session id={self.id}, user_id={self.sid}>'
+    return f'<JavaScriptSession id={self.id}, user_id={self.sid}>'

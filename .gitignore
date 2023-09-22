@@ -113,3 +113,5 @@ __pycache__
 *.ipynb
 *.xlsx
 .DS_Store
+
+.vscode/
